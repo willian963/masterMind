@@ -22,31 +22,36 @@ public class MasterMind {
 
 	/**
 	 * Game init
+	 * 
 	 * @throws IOException
 	 */
 	@SuppressWarnings("resource")
 	static void solutionPattern() throws IOException {
 		boolean continueGame = false;
 		while (!continueGame) {
-			int patternLength = 3;// generateRandomNumber();
-			int numberGuess = 3;// generateRandomNumber();
+			Scanner input = new Scanner(System.in);
+			int patternLength = initPattern();// generateRandomNumber();
+			int numberGuess = initNumberOfGuesses();// generateRandomNumber();
 			int pattern[] = generatePattern(patternLength);
 			int guess[] = new int[patternLength];
 
+			System.out.println("\nGAME START");
 			System.out.println("Pattern length is " + patternLength + ". Maximum number of guesses is " + numberGuess);
 			int correct = 0;
 			int correctPossition = 0;
 			HashMap<Integer, Integer> mapCorrect = new HashMap<Integer, Integer>();
-			Scanner input = new Scanner(System.in);
 			boolean validateFlag = false;
 
 			if (null != pattern) {
 				for (int guessLoop = 1; guessLoop <= numberGuess; guessLoop++) {
 					while (!validateFlag) {
 						try {
-							System.out.print("Please enter an guess: ");
+							System.out.print("Please enter an guess number " +guessLoop+ "/" +numberGuess+ " : ");
 							String inputGuess = input.nextLine();
-							validateFlag = validateCriteria(pattern, guess, numberGuess, inputGuess);
+
+							if (isValidNumber(inputGuess)) {
+								validateFlag = validateCriteria(pattern, guess, numberGuess, inputGuess);
+							}
 						} catch (Exception e) {
 							System.out.println(e.getMessage());
 						}
@@ -88,7 +93,25 @@ public class MasterMind {
 	}
 
 	/**
+	 * Validate if input is valid.
+	 * @param inputGuess
+	 * @return
+	 */
+	private static boolean isValidNumber(String inputGuess) {
+		boolean result = false;
+		try {
+			int inputNumberGuess = new Integer(inputGuess);
+			result = true;
+		} catch (NumberFormatException | NullPointerException nfe) {
+			System.out.println("The value typed is not a valid number! ");
+			result = false;
+		}
+		return result;
+	}
+
+	/**
 	 * Clear Screen
+	 * 
 	 * @throws IOException
 	 */
 	public static void clearScreen() throws IOException {
@@ -106,6 +129,7 @@ public class MasterMind {
 
 	/**
 	 * Method to generate random number.
+	 * 
 	 * @return
 	 */
 	static int generateRandomNumber() {
@@ -125,12 +149,13 @@ public class MasterMind {
 
 	/**
 	 * Method to generate pattern.
+	 * 
 	 * @param number
 	 * @return
 	 */
 	static int[] generatePattern(int number) {
 		int pattern[] = new int[number];
-		int maxDigitPattern = 6;
+		int maxDigitPattern = 7;
 		HashMap<Integer, Integer> mapPattern = new HashMap<Integer, Integer>();
 
 		for (int i = 0; i < number; i++) {
@@ -150,6 +175,7 @@ public class MasterMind {
 
 	/**
 	 * Method with all validates.
+	 * 
 	 * @param pattern
 	 * @param guess
 	 * @param numberGuess
@@ -164,6 +190,7 @@ public class MasterMind {
 
 	/**
 	 * Validate Input
+	 * 
 	 * @param pattern
 	 * @param guess
 	 * @param inputGuess
@@ -171,6 +198,7 @@ public class MasterMind {
 	 */
 	static boolean validateGuessInput(int[] pattern, int[] guess, String inputGuess) {
 		boolean result = false;
+		HashMap<Integer, Integer> mapWrongNumber = new HashMap<Integer, Integer>();
 		if (pattern.length == inputGuess.length()) {
 			for (int i = 0; i <= inputGuess.length(); i++) {
 				if (i + 1 <= inputGuess.length()) {
@@ -178,9 +206,12 @@ public class MasterMind {
 					if (value > 0 && value <= 6) {
 						guess[i] = value;
 					} else {
-						throw new RuntimeException("Error: Guess number out of range! Number: " + value);
+						mapWrongNumber.put(value, value);
 					}
 				}
+			}
+			if(mapWrongNumber.size() > 0) {
+				throw new RuntimeException("Error: Guess number out of range! Numbers: " + print(mapWrongNumber));
 			}
 		}
 		return result;
@@ -188,6 +219,7 @@ public class MasterMind {
 
 	/**
 	 * Validate pattern length
+	 * 
 	 * @param pattern
 	 * @param guess
 	 * @param inputGuess
@@ -205,6 +237,7 @@ public class MasterMind {
 
 	/**
 	 * Validate if the Code was broken.
+	 * 
 	 * @param pattern
 	 * @param correct
 	 * @param correctPossition
@@ -215,34 +248,53 @@ public class MasterMind {
 	static boolean isCodeBreaker(int[] pattern, int correct, int correctPossition, int numberLoop, int numberGuess) {
 		boolean result = false;
 		if (pattern.length == correctPossition && correct == correctPossition) {
+			System.out.println("CONGRATS!!!");
 			System.out.println(
-					"You broke the code in " + numberLoop + " guesses!" + " Pattern: " + printPattern(pattern) + ".");
+					"You broke the code in " + numberLoop + " guesses!" + " Pattern: " + print(pattern) + ".");
 			result = true;
 		} else {
 			System.out.println(correct + " correct, " + correctPossition + " correct position");
 			if (numberGuess == numberLoop) {
+				System.out.println("\nGAME OVER!!!");
 				System.out.println("You were unable to break the code in " + numberLoop + " guesses. Code pattern is: "
-						+ printPattern(pattern) + ".");
+						+ print(pattern) + ".");
 			}
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Method print the pattern
+	 * 
 	 * @param pattern
 	 * @return
 	 */
-	static String printPattern(int[] pattern) {
+	static String print(int[] pattern) {
 		String result = "";
 		for (int i = 0; i < pattern.length; i++) {
 			result = result.concat(new Integer(pattern[i]).toString());
 		}
 		return result;
 	}
+	
+	/**
+	 * Method print wrong values
+	 * 
+	 * @param pattern
+	 * @return
+	 */
+	static String print(HashMap<Integer, Integer> mapWrongNumber) {
+		String result = "";
+		
+		for(Integer key : mapWrongNumber.keySet()) {
+			result = result.concat(key.toString()+" ");
+		}
+		return result;
+	}
 
 	/**
 	 * Method to validate if player will be continue playing
+	 * 
 	 * @return
 	 */
 	@SuppressWarnings("resource")
@@ -251,7 +303,7 @@ public class MasterMind {
 		boolean result = false;
 		while (!sContinue) {
 			Scanner input = new Scanner(System.in);
-			System.out.print("Would you like to continue playing: Y or N ");
+			System.out.print("Would you like to continue playing? Y or N ");
 			String inputGuess = input.nextLine();
 
 			if (inputGuess.toUpperCase().equals("Y")) {
@@ -265,6 +317,52 @@ public class MasterMind {
 			if (!inputGuess.toUpperCase().equals("Y") && !inputGuess.toUpperCase().equals("N")) {
 				System.out.println("The answer should be Y or N. ");
 			}
+		}
+		return result;
+	}
+
+	static int initPattern() {
+		boolean sContinue = false;
+		int result = 0;
+		while (!sContinue) {
+			Scanner input = new Scanner(System.in);
+			System.out.print("Please enter the lenght of pattern, number 1 to 6 ");
+			String inputGuess = input.nextLine();
+
+			if (isValidNumber(inputGuess)) {
+				result = new Integer(inputGuess);
+				if (result > 0 && result <= 6) {
+					sContinue = true;
+				} else {
+					System.out.println("The number is out of range! ");
+					sContinue = false;
+				}
+			}else {
+				sContinue = false;
+			}
+
+		}
+		return result;
+	}
+
+	static int initNumberOfGuesses() {
+		boolean sContinue = false;
+		int result = 0;
+		while (!sContinue) {
+			Scanner input = new Scanner(System.in);
+			System.out.print("Please enter the quantity of guesses: ");
+			String inputGuess = input.nextLine();
+			if (isValidNumber(inputGuess)) {
+				result = new Integer(inputGuess);
+				if (result > 0 && result <= 10) {
+					sContinue = true;
+				}else {
+					System.out.println("Maximum number of guesses allowed is: 10");
+				}
+			}else {
+				sContinue = false;
+			}
+
 		}
 		return result;
 	}
