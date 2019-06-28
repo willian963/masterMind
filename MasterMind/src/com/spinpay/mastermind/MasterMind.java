@@ -46,7 +46,7 @@ public class MasterMind {
 				for (int guessLoop = 1; guessLoop <= numberGuess; guessLoop++) {
 					while (!validateFlag) {
 						try {
-							System.out.print("Please enter an guess number " +guessLoop+ "/" +numberGuess+ " : ");
+							System.out.print("Please enter an guess number " + guessLoop + "/" + numberGuess + " : ");
 							String inputGuess = input.nextLine();
 
 							if (isValidNumber(inputGuess)) {
@@ -94,14 +94,23 @@ public class MasterMind {
 
 	/**
 	 * Validate if input is valid.
+	 * 
 	 * @param inputGuess
 	 * @return
 	 */
 	private static boolean isValidNumber(String inputGuess) {
 		boolean result = false;
 		try {
-			int inputNumberGuess = new Integer(inputGuess);
-			result = true;
+			if(!(inputGuess.length() > 10)) {
+			Integer inputNumberGuess = new Integer(inputGuess);
+			if (inputNumberGuess > 0) {
+				result = true;
+			}else {
+				System.out.println("The value should greater then zero ");
+			}
+			}else {
+				System.out.println("Input is to long, the maximum is: 10");
+			}
 		} catch (NumberFormatException | NullPointerException nfe) {
 			System.out.println("The value typed is not a valid number! ");
 			result = false;
@@ -210,7 +219,7 @@ public class MasterMind {
 					}
 				}
 			}
-			if(mapWrongNumber.size() > 0) {
+			if (mapWrongNumber.size() > 0) {
 				throw new RuntimeException("Error: Guess number out of range! Numbers: " + print(mapWrongNumber));
 			}
 		}
@@ -249,8 +258,8 @@ public class MasterMind {
 		boolean result = false;
 		if (pattern.length == correctPossition && correct == correctPossition) {
 			System.out.println("CONGRATS!!!");
-			System.out.println(
-					"You broke the code in " + numberLoop + " guesses!" + " Pattern: " + print(pattern) + ".");
+			System.out
+					.println("You broke the code in " + numberLoop + " guesses!" + " Pattern: " + print(pattern) + ".");
 			result = true;
 		} else {
 			System.out.println(correct + " correct, " + correctPossition + " correct position");
@@ -276,7 +285,7 @@ public class MasterMind {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Method print wrong values
 	 * 
@@ -285,9 +294,9 @@ public class MasterMind {
 	 */
 	static String print(HashMap<Integer, Integer> mapWrongNumber) {
 		String result = "";
-		
-		for(Integer key : mapWrongNumber.keySet()) {
-			result = result.concat(key.toString()+" ");
+
+		for (Integer key : mapWrongNumber.keySet()) {
+			result = result.concat(key.toString() + " ");
 		}
 		return result;
 	}
@@ -337,7 +346,7 @@ public class MasterMind {
 					System.out.println("The number is out of range! ");
 					sContinue = false;
 				}
-			}else {
+			} else {
 				sContinue = false;
 			}
 
@@ -356,10 +365,10 @@ public class MasterMind {
 				result = new Integer(inputGuess);
 				if (result > 0 && result <= 10) {
 					sContinue = true;
-				}else {
-					System.out.println("Maximum number of guesses allowed is: 10");
+				} else {
+					System.out.println("Maximum number of guesses allowed is 1 to 10");
 				}
-			}else {
+			} else {
 				sContinue = false;
 			}
 
